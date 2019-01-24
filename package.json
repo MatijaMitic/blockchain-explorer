@@ -1,0 +1,24 @@
+{
+  "name": "eth_exploer",
+  "version": "1.0.0",
+  "description": "Ethereum chain explorer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcac01/blockchain-explorer.git"
+  },
+  "author": "bchub_team2",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bcac01/blockchain-explorer/issues"
+  },
+  "homepage": "https://github.com/bcac01/blockchain-explorer#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "promise": "^8.0.2",
+    "web3": "^1.0.0-beta.37"
+  }
+}
