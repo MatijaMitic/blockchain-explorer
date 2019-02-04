@@ -1,6 +1,7 @@
 var Web3 = require('web3');
-var web3 = new Web3();
-web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
+//var web3 = new Web3();
+const web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
+//web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 var Promise = require('promise');
 
