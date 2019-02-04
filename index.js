@@ -1,6 +1,6 @@
 var Web3 = require('web3');
-var web3 = new Web3();
-web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
+
+var web3 = new Web3(Web3.givenProvider || new Web3.providers.WebsocketProvider("ws://localhost:8445"));
 
 var Promise = require('promise');
 
@@ -9,7 +9,51 @@ var app = express();
 
 app.get('/', function (req, res) {
    res.send('Hello Eth explorers!');
-})
+});
+
+var CONFIRMATION_TIME_IN_BLOCKS = 30; // todo put in config.json
+var monitoring_addresses = [];
+var monitoring_transactions = [];
+
+app.get('/add_address', function (req, res) {
+    var address = req.query.address.toLowerCase();
+    //todo add check whether address is valid; regex
+    //todo add address if doesnt exist
+    monitoring_addresses.push(address);
+    console.log(monitoring_addresses);
+    res.end(JSON.stringify(monitoring_addresses));
+ });
+
+web3.eth.subscribe('newBlockHeaders', function(error, result){
+    if (!error) {
+        //check whether some transaction is confirmed
+        monitoring_transactions.forEach(function(txRecord, index){
+            if(result.number - txRecord.blockNumber >= CONFIRMATION_TIME_IN_BLOCKS){
+                //todo check getTreansactionRecipet().status
+                txRecord.confirmed = true;
+                monitoring_transactions[index] = txRecord;
+            }
+        });
+        return;
+    }
+    console.error("Error in subscription: ", error);
+    return;
+}).on("data", function(blockHeader){
+    web3.eth.getBlock(blockHeader.number).then(function(fullBlock){
+        console.log("Get transactions size :"+fullBlock.transactions.length);
+        fullBlock.transactions.forEach(function(transaction){
+            web3.eth.getTransaction(transaction).then(function(fullTransaction){
+                console.log("Check transaction data -> to: ",fullTransaction.to.toLowerCase());
+                if(monitoring_addresses.includes(fullTransaction.to.toLowerCase())){
+                    monitoring_transactions.push({"hash":transaction,"blockNumber":fullTransaction.blockNumber, "confirmed":false});
+                }
+                console.log(monitoring_addresses);
+                console.log(monitoring_transactions);
+            });
+        });
+        return;
+    });
+}).on("error", console.error);
 
 async function processBlocks(blockArray) {
     var items = await new Promise.all(blockArray);
