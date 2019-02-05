@@ -4,6 +4,8 @@ var web3 = new Web3(Web3.givenProvider || new Web3.providers.WebsocketProvider("
 
 var Promise = require('promise');
 
+const json2csv = require('json2csv').parse;
+
 var express = require('express');
 var app = express();
 
@@ -102,7 +104,12 @@ app.get('/process_get', function (req, res) {
         }
         processTransactions(transactionArray).then(function(transactions){
             console.log(transactions);
-            res.end(JSON.stringify(transactions));
+            const csvTransactionString = json2csv(transactions);
+            //todo parse filename -> filename_startBlock_endBlock
+            res.setHeader('Content-disposition', 'attachment; filename=transactions.csv');
+            res.set('Content-Type', 'text/csv');
+            res.status(200).send(csvTransactionString);
+            //res.end("Downloading");
         });
     });
 
