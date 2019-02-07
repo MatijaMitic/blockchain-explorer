@@ -9,6 +9,30 @@ const json2csv = require('json2csv').parse;
 var express = require('express');
 var app = express();
 
+//establish mysql connection
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : '192.168.1.101',
+  user     : 'bc-user',
+  password : '1234',
+  database : 'blockchain_explorer',
+  port     : 3306
+});
+
+//Get request for testing database connection
+app.get('/test_db', function (req, res) {
+  connection.connect(function(err) {
+    if (err) {
+	console.error('error connecting: ' + err.stack);
+	return;
+    }
+ 
+    res.send('Successfully connected to the database!');
+  });
+   //res.send('Hello Eth explorers!');
+});
+
+
 app.get('/', function (req, res) {
    res.send('Hello Eth explorers!');
 });
