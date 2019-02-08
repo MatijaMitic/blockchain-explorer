@@ -1,6 +1,6 @@
-CREATE SCHEMA `blockchain_explorer` ;
+CREATE SCHEMA `blockchain_explorer`;
 
-USE blockchain_explorer
+USE blockchain_explorer;
 
 CREATE TABLE `blockchain_explorer`.`block_timestamp_mapping` (
   `Block_number` INT NOT NULL,

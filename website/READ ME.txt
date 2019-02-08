@@ -1,0 +1,6 @@
+
+index je pocetna strana
+
+review je strana "pretrazivac"
+
+contact je strana "kontakt"
