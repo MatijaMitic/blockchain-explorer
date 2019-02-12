@@ -98,12 +98,11 @@ app.get('/process_get', function (req, res) {
        end_block:req.query.last_block
     };
 
-    totalBlocks = response.end_block - response.start_block;
 
     var blockArray = [];
     var transactionArray = [];
-
-    for (var i = 0; i <= totalBlocks; i++) {
+	
+    for (var i = parseInt(response.start_block); i <= parseInt(response.end_block); i++) {
         blockArray.push(
             web3.eth.getBlock(i).then(result => {
                 return result;
@@ -121,7 +120,7 @@ app.get('/process_get', function (req, res) {
                     console.log(transaction);
                     transactionArray.push(
                         web3.eth.getTransaction(transaction).then(result => {
-                            return result;
+                            return (({blockNumber, hash, transactionIndex, from, to, value, gasPrice, gas}) => ({blockNumber, hash, 						transactionIndex, from, to, value, gasPrice, gas}))(result);
                         })
                     );
                 });
