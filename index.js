@@ -116,15 +116,25 @@ app.get('/process_get', function (req, res) {
                 /*if(blocks[i].transactions.length>0){
                     console.log(blocks[i]);
                 }*/
-                blocks[i].transactions.forEach(function(transaction){
-                    console.log(transaction);
-                    transactionArray.push(
-                        web3.eth.getTransaction(transaction).then(result => {
-                            return (({blockNumber, hash, transactionIndex, from, to, value, gasPrice, gas}) => ({blockNumber, hash, 						transactionIndex, from, to, value, gasPrice, gas}))(result);
-                        })
-                    );
-                });
-        }
+            blocks[i].transactions.forEach(function(transaction){
+                var timestamp = blocks[i].timestamp;
+		var date = new Date(timestamp*1000);			
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		var day = date.getDate();
+		var hour = date.getHours();	//GMT+1 (our) timezone
+		var minute = date.getMinutes();
+		var second = date.getSeconds();
+                console.log(transaction, year, month);
+                transactionArray.push(
+                    web3.eth.getTransaction(transaction).then(result => {
+                        return (({blockNumber, blockHash, hash, transactionIndex, from, to, value, gasPrice, gas}) => ({
+                            blockNumber, blockHash, hash, transactionIndex, from, to, value, gasPrice, gas, timestamp, year, month, day, hour, minute, second}))(result)
+                    })
+                );
+            });
+	};
+
         processTransactions(transactionArray).then(function(transactions){
             console.log(transactions);
             const csvTransactionString = json2csv(transactions);
@@ -138,6 +148,7 @@ app.get('/process_get', function (req, res) {
 
     //res.end(JSON.stringify(response));
  })
+
 
 var server = app.listen(8081, function () {
    var host = server.address().address
